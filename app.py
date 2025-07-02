@@ -17,12 +17,18 @@ def home():
 def chat():
     user_input = request.json.get("message").lower()
 
-    if "repos" in user_input:
-        return get_repos("octocat")  # Change to your GitHub username
+    if "repos" in user_input or "repositories" in user_input or "projects" in user_input:
+        return get_repos("octocat")  # change "octocat" to your username
     elif "repo details" in user_input:
-        return get_repo_details("octocat", "Spoon-Knife")  # Replace as needed
+        try:
+            repo_name = user_input.split("repo details",1)[1].strip()
+            return get_repo_details("octocat", repo_name)
+        except:
+            return jsonify({"response": "Please specify the repo name after 'repo details'"})
+
     else:
         return jsonify({"response": "Sorry, I didn’t understand that."})
+
 
 def get_repos(username):
     url = f"https://api.github.com/users/{username}/repos"
