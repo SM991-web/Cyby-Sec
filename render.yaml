@@ -7,4 +7,6 @@ services:
     startCommand: "python app.py"
     envVars:
       - key: GITHUB_TOKEN
-        value: your_actual_token_here
+        value: ${GITHUB_TOKEN}
+      - key: OPENAI_API_KEY
+        value: ${OPENAI_API_KEY}
