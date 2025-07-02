@@ -1,0 +1,24 @@
+{
+  "name": "cyby-sec",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SM991-web/Cyby-Sec.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SM991-web/Cyby-Sec/issues"
+  },
+  "homepage": "https://github.com/SM991-web/Cyby-Sec#readme",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
