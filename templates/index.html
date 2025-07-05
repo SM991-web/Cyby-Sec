@@ -17,6 +17,9 @@
         <span class="control-label">Show Sources</span>
         <button id="newChatBtn"><i class="fas fa-plus"></i> New Chat</button>
       </div>
+       <button id="historyBtn">
+        <i class="fas fa-history"></i> History
+    </button>
     </header>
     
     <div id="chat-history">
@@ -33,7 +36,17 @@
       </div>
     </div>
   </div>
-
+  <div id="historyPanel" class="history-panel">
+    <div class="history-header">
+        <h3>Chat History</h3>
+        <button id="closeHistoryBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div id="historyList" class="history-list">
+        <!-- History items will be loaded here -->
+    </div>
+</div>
   <script src="/dist/script.js"></script>
 </body>
 </html>

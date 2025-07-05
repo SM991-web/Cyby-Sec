@@ -175,7 +175,88 @@ def ask():
             "conversationId": conversation_id
         }), 500
 
+# Add these imports at the top
+import json
+from datetime import datetime
 
+# Add these new routes after your existing routes
+@app.route("/save-chat", methods=["POST"])
+def save_chat():
+    data = request.json
+    conversation_id = data.get("conversationId")
+    messages = data.get("messages")
+    
+    if not conversation_id or not messages:
+        return jsonify({"success": False, "error": "Missing parameters"}), 400
+    
+    try:
+        # Create chat history directory if it doesn't exist
+        os.makedirs("chat_history", exist_ok=True)
+        
+        # Create filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"chat_history/{conversation_id}_{timestamp}.json"
+        
+        # Save chat history to file
+        with open(filename, "w") as f:
+            json.dump({
+                "conversation_id": conversation_id,
+                "timestamp": timestamp,
+                "messages": messages
+            }, f, indent=2)
+            
+        return jsonify({"success": True, "filename": filename})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/load-chat-history", methods=["GET"])
+def load_chat_history():
+    conversation_id = request.args.get("conversationId")
+    
+    if not conversation_id:
+        return jsonify({"success": False, "error": "Missing conversationId"}), 400
+    
+    try:
+        # Find all chat files for this conversation
+        chat_files = []
+        if os.path.exists("chat_history"):
+            for file in os.listdir("chat_history"):
+                if file.startswith(conversation_id):
+                    chat_files.append(file)
+        
+        # Sort by timestamp (newest first)
+        chat_files.sort(reverse=True)
+        
+        # Load all chat histories
+        histories = []
+        for file in chat_files:
+            with open(f"chat_history/{file}", "r") as f:
+                data = json.load(f)
+                histories.append({
+                    "filename": file,
+                    "timestamp": data["timestamp"],
+                    "message_count": len(data["messages"])
+                })
+        
+        return jsonify({"success": True, "histories": histories})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/get-chat", methods=["GET"])
+def get_chat():
+    filename = request.args.get("filename")
+    
+    if not filename:
+        return jsonify({"success": False, "error": "Missing filename"}), 400
+    
+    try:
+        with open(f"chat_history/{filename}", "r") as f:
+            data = json.load(f)
+            return jsonify({"success": True, "chat": data})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    
+    
 if __name__ == "__main__":
     # Create data directory if it doesn't exist
     os.makedirs("data", exist_ok=True)

@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const sourceCheck = document.getElementById("sourceCheck");
   const newChatBtn = document.getElementById("newChatBtn");
   
+  // History elements
+  const historyBtn = document.getElementById("historyBtn");
+  const historyPanel = document.getElementById("historyPanel");
+  const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+  const historyList = document.getElementById("historyList");
+  
   // Conversation state
   let conversationId = generateConversationId();
   let messages = [];
@@ -28,6 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Event listeners
   chatForm.addEventListener("submit", handleSubmit);
   newChatBtn.addEventListener("click", startNewChat);
+  
+  // Add event listeners for history panel if elements exist
+  if (historyBtn) historyBtn.addEventListener("click", toggleHistoryPanel);
+  if (closeHistoryBtn) closeHistoryBtn.addEventListener("click", toggleHistoryPanel);
   
   // Generate unique conversation ID
   function generateConversationId() {
@@ -52,6 +62,101 @@ document.addEventListener("DOMContentLoaded", () => {
     messages = [];
     chatHistory.innerHTML = '';
     addWelcomeMessage();
+  }
+  
+  // Toggle history panel visibility
+  function toggleHistoryPanel() {
+    historyPanel.classList.toggle("show");
+    if (historyPanel.classList.contains("show")) {
+      loadChatHistory();
+    }
+  }
+  
+  // Load chat history from server
+  async function loadChatHistory() {
+    if (!historyList) return;
+    
+    historyList.innerHTML = "<div class='loading'>Loading history...</div>";
+    
+    try {
+      const res = await fetch(`/load-chat-history?conversationId=${conversationId}`);
+      const data = await res.json();
+      
+      if (data.success && data.histories.length > 0) {
+        historyList.innerHTML = "";
+        data.histories.forEach(history => {
+          const historyItem = document.createElement("div");
+          historyItem.className = "history-item";
+          historyItem.innerHTML = `
+            <div class="history-info">
+              <span>${formatTimestamp(history.timestamp)}</span>
+              <span>${history.message_count} messages</span>
+            </div>
+            <button class="load-chat-btn" data-filename="${history.filename}">
+              <i class="fas fa-history"></i> Load
+            </button>
+          `;
+          historyList.appendChild(historyItem);
+          
+          // Add event listener to load button
+          const loadBtn = historyItem.querySelector(".load-chat-btn");
+          loadBtn.addEventListener("click", () => loadSpecificChat(history.filename));
+        });
+      } else {
+        historyList.innerHTML = "<div class='empty'>No chat history found</div>";
+      }
+    } catch (err) {
+      historyList.innerHTML = `<div class='error'>Error loading history: ${err.message}</div>`;
+    }
+  }
+  
+  // Load a specific chat from history
+  async function loadSpecificChat(filename) {
+    try {
+      const res = await fetch(`/get-chat?filename=${filename}`);
+      const data = await res.json();
+      
+      if (data.success) {
+        // Clear current chat
+        messages = [];
+        chatHistory.innerHTML = "";
+        
+        // Load saved chat messages
+        data.chat.messages.forEach(msg => {
+          addMessageToHistory(msg);
+          messages.push(msg);
+        });
+        
+        // Update conversation ID to match loaded chat
+        conversationId = data.chat.conversation_id;
+        
+        // Close history panel
+        historyPanel.classList.remove("show");
+      }
+    } catch (err) {
+      console.error("Error loading chat:", err);
+      const errorElement = document.createElement('div');
+      errorElement.className = 'message assistant-message';
+      errorElement.innerHTML = `
+        <div class="message-header">
+          <i class="fas fa-robot"></i> Assistant
+        </div>
+        <div class="message-content">Error loading chat history</div>
+      `;
+      chatHistory.appendChild(errorElement);
+    }
+  }
+  
+  // Format timestamp for display
+  function formatTimestamp(timestamp) {
+    // Format: YYYYMMDD_HHMMSS
+    const year = timestamp.substring(0, 4);
+    const month = timestamp.substring(4, 6);
+    const day = timestamp.substring(6, 8);
+    const hour = timestamp.substring(9, 11);
+    const minute = timestamp.substring(11, 13);
+    
+    return `${month}/${day}/${year} ${hour}:${minute}`;
   }
   
   // Handle form submission
@@ -145,7 +250,19 @@ document.addEventListener("DOMContentLoaded", () => {
           history: messages.slice(-5) // Send last 5 messages for context
         })
       });
-
+    // Save chat history after successful response
+    try {
+      await fetch("/save-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversationId: conversationId,
+          messages: messages
+        })
+      });
+    } catch (err) {
+      console.error("Error saving chat history:", err);
+    }  
       const data = await res.json();
       
       // Remove thinking indicator
@@ -163,6 +280,20 @@ document.addEventListener("DOMContentLoaded", () => {
       
       addMessageToHistory(assistantMessage);
       messages.push(assistantMessage);
+      
+      // Save chat history after successful response
+      try {
+        await fetch("/save-chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId: conversationId,
+            messages: messages
+          })
+        });
+      } catch (err) {
+        console.error("Error saving chat history:", err);
+      }
     } catch (err) {
       console.error("Fetch error:", err);
       
