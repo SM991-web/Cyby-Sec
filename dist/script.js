@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function addWelcomeMessage() {
     const welcomeMessage = {
       role: "assistant",
-      content: "Hello! I'm your Cybersecurity Assistant. Ask me anything about network security, threat detection, encryption, or other cybersecurity topics. How can I help you today?",
+      content: "What can I Assist you with Today?",
       sources: []
     };
     

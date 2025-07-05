@@ -182,3 +182,4 @@ if __name__ == "__main__":
     
     # Add debug configuration
     app.run(debug=True, use_reloader=True)
+    
