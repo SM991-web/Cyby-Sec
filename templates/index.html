@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GitHub Chatbot</title>
+  <title>CyberSec Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h2>Ask GitHub Chatbot</h2>
-  <form id="chatForm">
-    <input type="text" id="message" placeholder="Ask something...">
-    <button type="submit">Send</button>
-  </form>
-  <div id="response"></div>
+  <div class="chat-container">
+    <header>
+      <h1><i class="fas fa-shield-alt"></i> CyberSec Assistant</h1>
+      <div class="controls">
+        <label class="switch">
+          <input type="checkbox" id="sourceCheck">
+          <span class="slider"></span>
+        </label>
+        <span class="control-label">Show Sources</span>
+        <button id="newChatBtn"><i class="fas fa-plus"></i> New Chat</button>
+      </div>
+    </header>
+    
+    <div id="chat-history">
+      <!-- Messages will appear here -->
+    </div>
+    
+    <div class="input-area">
+      <form id="chatForm">
+        <input type="text" id="message" placeholder="Ask a cybersecurity question..." required>
+        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+      </form>
+      <div class="disclaimer">
+        <i class="fas fa-info-circle"></i> Assistant remembers last 5 messages. Start new chat to clear history.
+      </div>
+    </div>
+  </div>
 
-  <script>
-    document.getElementById("chatForm").onsubmit = async (e) => {
-      e.preventDefault();
-      const message = document.getElementById("message").value;
-      const res = await fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
-      const data = await res.json();
-      document.getElementById("response").innerText = data.response;
-    };
-  </script>
+  <script src="/dist/script.js"></script>
 </body>
 </html>
