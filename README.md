@@ -77,20 +77,21 @@ python rag_loader.py
 Make sure to convert your TS to JS:
 
 npx tsc
+""
 This compiles static/script.ts into dist/script.js.
-
+""
 ---
 
 🌐 Deployment (Optional)
--
+""
 This app can be deployed on platforms like Render, Replit, or Railway.
--
+""
 Just ensure:
--
+""
 requirements.txt is updated
--
+""
 You use a production server like gunicorn app:app
-
+""
 
 ----
 
