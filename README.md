@@ -19,20 +19,32 @@ A smart, retrieval-augmented AI chatbot built with **Flask**, **LangChain**, and
 
 cybersec-chatbot/
 │
+-
 ├── app.py # Flask backend server
+-
 ├── rag_loader.py # Loads PDFs and builds FAISS vector DB
+-
 ├── .env # Stores OpenAI API key
+-
 ├── requirements.txt # Python dependencies
+-
 ├── tsconfig.json # TypeScript config
+-
 ├── dist/ # Compiled JS (from script.ts)
+-
 ├── static/
+-
 │ └── script.ts # TypeScript source
+-
 ├── templates/
+-
 │ └── index.html # Chat UI
+-
 ├── data/ # Folder for your PDF documents
+-
 └── faiss_index/ # Auto-generated vector DB
 
----
+---------
 
 ## 🚀 Getting Started
 
@@ -66,3 +78,24 @@ Make sure to convert your TS to JS:
 
 npx tsc
 This compiles static/script.ts into dist/script.js.
+
+---
+
+🌐 Deployment (Optional)
+-
+This app can be deployed on platforms like Render, Replit, or Railway.
+-
+Just ensure:
+-
+requirements.txt is updated
+-
+You use a production server like gunicorn app:app
+
+
+----
+
+
+📖 License
+-
+MIT © 2025 — Built with ❤️ by Snehanshu
+[https://cyby-sec.onrender.com]
