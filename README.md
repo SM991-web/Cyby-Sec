@@ -98,4 +98,6 @@ You use a production server like gunicorn app:app
 📖 License
 -
 MIT © 2025 — Built with ❤️ by Snehanshu
+''
 [https://cyby-sec.onrender.com]
+''
